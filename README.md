@@ -1,26 +1,55 @@
 # Body Sync API
 
-Backend de Body Sync (NestJS), desplegado en Render.
+Backend de la aplicación **Body Sync**, desplegado en **Render**.
 
-## Stack
-- NestJS (Node.js)
-- PostgreSQL vía Neon
-- Docker / Docker Compose
+## 🛠️ Stack Tecnológico
 
-## Requisitos previos
+* **Framework:** NestJS (Node.js)
+* **Base de Datos:** PostgreSQL (vía Neon / Local)
+* **Contenedores:** Docker & Docker Compose
 
-Antes de levantar el proyecto necesitas un proyecto creado en [Neon](https://neon.tech)
-con su connection string a mano (o usar el perfil `local-db`, ver abajo).
+---
 
-## Desarrollo local
+## 📋 Requisitos Previos
 
-1. Copiar `.env.example` a `.env` y completar `DATABASE_URL` con tu connection string de Neon.
-2. Levantar solo el API (contra Neon): `docker compose up --build`
-3. Levantar API + Postgres local (sin depender de Neon): `docker compose --profile local-db up --build`
-   - En este caso, usa la línea comentada de `DATABASE_URL` en `.env.example` (`@db:5432`).
+Antes de levantar el proyecto en tu entorno local, necesitas:
+1. Tener instalado [Docker](https://docker.com) y Docker Compose.
+2. Un proyecto creado en [Neon](https://neon.tech) con su *connection string* a mano (o usar el perfil `local-db`, ver abajo).
 
-## Repo relacionado
-Frontend: [body-sync-client](https://github.com/<tu-usuario>/body-sync-client) — no está
-dockerizado, corre directo con `npm run dev` (ver su propio README).
+---
 
-Ver `AGENTS.md` para convenciones del proyecto.
+## 🚀 Desarrollo Local
+
+### 1. Configurar Variables de Entorno
+Copia el archivo de plantilla y completa los datos requeridos:
+```bash
+cp .env.example .env
+```
+* **Opción Cloud:** Completa `DATABASE_URL` con tu string de conexión de Neon.
+* **Opción Local:** Usa la línea comentada de `DATABASE_URL` apuntando a `@db:5432` en el `.env.example`.
+
+### 2. Levantar el Proyecto
+
+Dependiendo de cómo quieras gestionar la base de datos, ejecuta uno de los siguientes comandos en tu terminal:
+
+* **Levantar solo la API (Conectada a Neon Cloud):**
+  ```bash
+  docker compose up --build
+  ```
+
+* **Levantar API + PostgreSQL Local (Sin depender de Neon):**
+  ```bash
+  docker compose --profile local-db up --build
+  ```
+
+---
+
+## 🔗 Repositorios Relacionados
+
+* **Frontend:** [body-sync-client](https://github.com/JulianSantosC/body-sync-client) *(Nota: No está dockerizado, se ejecuta directamente en local con `npm run dev`, para más información puedes ver su propio README)*.
+
+---
+
+## 📐 Convenciones del Proyecto
+
+Para conocer los lineamientos de arquitectura, estilos, buenas prácticas y convenciones adoptadas en este proyecto, por favor revisa el archivo [AGENTS.md](./AGENTS.md).
