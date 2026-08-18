@@ -1,31 +1,66 @@
 services:
-  api: # Nombre del primer servicio que se creará cuando se ejecute el comando docker-compose up
-    build: # Indica que este contenedor no usará una imagen ya hecha, sino que Docker debe construir una usando un archivo local.
-      context: . # Contexto del build: indica el directorio donde se encuentra el Dockerfile que es la carpeta actual donde se encuentra el archivo de Compose.
-      dockerfile: Dockerfile # Especifica textualmente que el archivo con las instrucciones de construcción es el llamado Dockerfile.
-    container_name: body-sync-api # Nombre del contenedor que se creará cuando se ejecute el comando docker-compose up
-    env_file: # Indica que se van a cargar variables de entorno desde un archivo externo.
-      - .env # Especifica que el archivo que contiene dichas variables se llama .env y está en la raíz del proyecto.
-    ports: # Configura el mapeo de puertos de comunicación.
-      - "3000:3000" # Vincula el puerto 3000 de tu computadora física (izquierda) con el puerto 3000 interno del contenedor (derecha).  ** Abre el puerto 3000 en tu sistema operativo y canaliza todo el tráfico hacia el puerto 3000 del contenedor.**
-    volumes: # Define sistemas de carpetas compartidas entre tu computadora y el contenedor. (en producción no se utiliza)
-      - .:/app # Mapea todo el directorio actual de tu computadora a la carpeta /app del contenedor (esto mapea/conecta la carpeta local con la del contenedor en tiempo real, y es para que docker detecte los cambios al instante).
-      #  **Respecto a lo anterior: Permite que cualquier cambio que se haga en el código se refleje inmediatamente dentro de Docker sin reconstruir la imagen (ideal para desarrollo). **
-      - /app/node_modules # Crea un volumen anónimo exclusivo para los módulos de Node dentro del contenedor. Evita que la carpeta local node_modules de tu computadora sobrescriba o interfiera con los módulos instalados internamente por Docker.
-    command: npm run start:dev # Establece el comando por defecto que se ejecutará de forma automática cuando el contenedor se encienda. En lugar de correr el código de producción compilado, ejecuta el script de desarrollo (generalmente incluye recarga en vivo al detectar cambios).
-
-  db: # Nombre del segundo servicio que se creará cuando se ejecute el comando docker-compose up
-    image: postgres:18-alpine # A diferencia de la API, este no se construye localmente; descarga una imagen oficial ya preconfigurada de PostgreSQL versión 16 basada en Alpine Linux.
-    container_name: body-sync-db # Asigna un nombre descriptivo fijo al contenedor de la base de datos.
-    profiles: ["local-db"] # Asigna este contenedor a un perfil llamado local-db. **Significa que la base de datos no se encenderá automáticamente con un simple docker compose up, a menos que especifiques manualmente ese perfil en tu comando.**
-    environment: # Permite declarar variables de entorno específicas que requiere el contenedor de Postgres para configurarse por primera vez.
-      POSTGRES_USER: postgres # Define el nombre del usuario administrador de la base de datos.
-      POSTGRES_PASSWORD: postgres # Define la contraseña de acceso para ese usuario administrador.
-      POSTGRES_DB: bodysync # Ordena la creación automática de una base de datos inicial llamada bodysync al arrancar.
+ # Nombre del primer servicio que se creará cuando se ejecute el comando docker-compose up
+  api:
+   # Indica que este contenedor no usará una imagen ya hecha, sino que Docker debe construir una usando un archivo local.
+    build:
+     # Contexto del build: indica el directorio donde se encuentra el Dockerfile que es la carpeta actual donde se encuentra el archivo de Compose.
+      context: .
+       # Especifica textualmente que el archivo con las instrucciones de construcción es el llamado Dockerfile.
+      dockerfile: Dockerfile
+       # Usa la etapa 'dependencies' del Dockerfile, no sigue hasta 'production'. Es importante, porque si no es especifica, entonces se utilizará la última etapa del Dockerfile, que en este caso seria la de produdcción 'production'.
+       # Nota personal: solo se necesita la la etapa 'dependencies' porque tiene todo lo necesario para el desarrollo (incluyendo herramientas de dev, como
+       # typescript). La etapa de 'build' y 'production' se utilizan, ambas, solo para producción, para hacer una imagen menos pesada, y óptimizada para
+       # producción, pero solo para producción. Además, como punto adicional, si no utiliza este target, el contenedor siempre utilizará la última etapa
+       # del Dockerfile, que en este caso sería la de 'production', dando un resultado compilado, pero sin las herramientas de dev —incluyendo la necesaria
+       # para correr el nest start --watch—. Por lo tanto, no tendría sentido y generaría error. Así que solo hay que correr la etap de 'dependencies'
+      target: dependencies
+       # Nombre del contenedor que se creará cuando se ejecute el comando docker-compose up.
+    container_name: body-sync-api
+     # Indica que se van a cargar variables de entorno desde un archivo externo.
+    env_file:
+     # Especifica que el archivo que contiene dichas variables se llama .env y está en la raíz del proyecto.
+      - .env
+       # Configura el mapeo de puertos de comunicación.
     ports:
-      - "5432:5432" # Conecta el puerto estándar de Postgres 5432 de tu computadora con el puerto 5432 interno del contenedor, permitiéndote conectarte con clientes externos como DBeaver o PgAdmin.
-    volumes: # Configura el almacenamiento persistente de datos.
-      - body-sync-db-data:/var/lib/postgresql # Vincula un volumen nombrado de Docker (izquierda) con la ruta interna donde Postgres guarda las tablas y registros (derecha).
+     # Vincula el puerto 3000 de tu computadora física (izquierda) con el puerto 3000 interno del contenedor (derecha).  ** Abre el puerto 3000 en tu sistema operativo y canaliza todo el tráfico hacia el puerto 3000 del contenedor.**
+      - "3000:3000"
+       # Define sistemas de carpetas compartidas entre tu computadora y el contenedor. (en producción no se utiliza)
+    volumes:
+     # Mapea todo el directorio actual de tu computadora a la carpeta /app del contenedor (esto mapea/conecta la carpeta local con la del contenedor en tiempo real, y es para que docker detecte los cambios al instante).
+     # Nota personal: esto lo que hace es darle visibilidad/acceso a la carpeta real y actual del computador, por lo tanto, todo cambio hecho en esa carpeta el docker lo va a ver, porque el docker tiene es como acceso visible a esa carpeta, no una copia separada, por lo tanto todos los cambios los va a VER inmediatamente.
+      - .:/app
+      #  **Respecto a lo anterior: Permite que cualquier cambio que se haga en el código se refleje inmediatamente dentro de Docker sin reconstruir la imagen (ideal para desarrollo). **
+       # Crea un volumen anónimo exclusivo para los módulos de Node dentro del contenedor. Evita que la carpeta local node_modules de la computadora sobrescriba o interfiera con los módulos instalados internamente por Docker, pues el node_modules que se usa debe ser el de docker, no el de la computadora, ya que tiene las dependencias y estructura que deben usar todos los que monten el docker.
+      - /app/node_modules
+       # Establece el comando por defecto que se ejecutará de forma automática cuando el contenedor se encienda. En lugar de correr el código de producción compilado, ejecuta el script de desarrollo (generalmente incluye recarga en vivo al detectar cambios).
+       # Este comando corre por debajo algo como "nest start --watch", que está en el package.json, que permite el hot-reload, trabajando en conjunto con el mapeo.
+       # Nota personal: esto es necesario, porque aunque el ".:app/" le permita a docker VER inmediatamente cada cambio en la carpeta/archivos, el código ya se estaba ejecutado, así que esto lo que hace es que vigilar los cambios y cada vez que detecte un cambio en la carpeta (gracoas al .:app/) vuelve y recompila todo, así ya serán visibles los cambios para quien programa.
+    command: npm run start:dev
 
-volumes: # declara formalmente los volúmenes globales compartidos que se utilizarán en este archivo de Compose.
-  body-sync-db-data: # Crea y reserva el espacio de almacenamiento virtual administrado por Docker que se le asignó al contenedor de la base de datos líneas arriba.
+ # Nombre del segundo servicio que se creará cuando se ejecute el comando docker-compose up
+  db:
+   # A diferencia de la API, este no se construye localmente; descarga una imagen oficial ya preconfigurada de PostgreSQL versión 16 basada en Alpine Linux.
+    image: postgres:18-alpine
+     # Asigna un nombre descriptivo fijo al contenedor de la base de datos.
+    container_name: body-sync-db
+     # Asigna este contenedor a un perfil llamado local-db. **Significa que la base de datos no se encenderá automáticamente con un simple docker compose up, a menos que especifiques manualmente ese perfil en tu comando.**
+    profiles: ["local-db"]
+     # Permite declarar variables de entorno específicas que requiere el contenedor de Postgres para configurarse por primera vez.
+    environment:
+     # Define el nombre del usuario administrador de la base de datos.
+      POSTGRES_USER: postgres
+       # Define la contraseña de acceso para ese usuario administrador.
+      POSTGRES_PASSWORD: postgres
+       # Ordena la creación automática de una base de datos inicial llamada bodysync al arrancar.
+      POSTGRES_DB: bodysync
+    ports:
+     # Conecta el puerto estándar de Postgres 5432 de tu computadora con el puerto 5432 interno del contenedor, permitiéndote conectarte con clientes externos como DBeaver o PgAdmin.
+      - "5432:5432"
+       # Configura el almacenamiento persistente de datos.
+    volumes:
+     # Vincula un volumen nombrado de Docker (izquierda) con la ruta interna donde Postgres guarda las tablas y registros (derecha).
+      - body-sync-db-data:/var/lib/postgresql
+ # declara formalmente los volúmenes globales compartidos que se utilizarán en este archivo de Compose.
+volumes:
+ # Crea y reserva el espacio de almacenamiento virtual administrado por Docker que se le asignó al contenedor de la base de datos líneas arriba.
+  body-sync-db-data:
