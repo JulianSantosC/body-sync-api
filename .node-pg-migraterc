@@ -1,0 +1,5 @@
+{
+  "migration-file-language": "ts",
+  "dir": "migrations",
+  "migrations-table": "pgmigrations"
+}
