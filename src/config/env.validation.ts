@@ -1,8 +1,8 @@
 import * as Joi from 'joi';
 
 // Joi schema validates shape AND format of env vars at startup.
-// The pattern for *_EXPIRES_IN enforces the same format the `ms` package
-// expects at runtime (e.g. "15m", "7d"), so a typo here fails fast on boot
+// The pattern for *_EXPIRES_IN enforces a strict subset of formats accepted by
+// the `ms` package at runtime (e.g. "15m", "7d"), so a typo here fails fast on boot
 // instead of surfacing as a cryptic JWT error later.
 
 // This is a regular expression (regex) literal, wrapped in slashes / /.
