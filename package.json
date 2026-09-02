@@ -2,7 +2,10 @@
   "name": "body-sync-api",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Julián S.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -24,8 +27,10 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "joi": "^18.2.8",
     "pg": "^8.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
