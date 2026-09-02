@@ -2,7 +2,10 @@
   "name": "body-sync-api",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Julián S.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
