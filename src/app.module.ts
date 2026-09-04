@@ -3,11 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from './config/env.validation';
- // Import the JWT configuration from jwt.strategy.ts
+ // Import the JWT configuration from jwt.config.ts
  // Import without {} in the name because is a default export. So it's
  // possible to use any name here in the import statement, and without
  // the {} brackets.
-import jwtConfig from './auth/strategies/jwt.strategy';
+import jwtConfig from './auth/config/jwt.config';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -20,7 +20,7 @@ import { DatabaseModule } from './database/database.module';
       // Nest throws immediately during bootstrap.
 
       // It builds type-safe, structured access at build time/during development (DX) and give cast in one place for env variables.
-      load: [jwtConfig], // Load the JWT configuration from jwt.strategy.ts
+      load: [jwtConfig], // Load the JWT configuration from jwt.config.ts
     }),
     DatabaseModule, // @Global() in the database.module.ts makes DatabaseService injectable anywhere
   ],
