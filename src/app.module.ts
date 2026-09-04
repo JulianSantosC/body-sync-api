@@ -8,6 +8,7 @@ import { envValidationSchema } from './config/env.validation';
  // possible to use any name here in the import statement, and without
  // the {} brackets.
 import jwtConfig from './auth/strategies/jwt.strategy';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import jwtConfig from './auth/strategies/jwt.strategy';
       // It builds type-safe, structured access at build time/during development (DX) and give cast in one place for env variables.
       load: [jwtConfig], // Load the JWT configuration from jwt.strategy.ts
     }),
+    DatabaseModule, // @Global() in the database.module.ts makes DatabaseService injectable anywhere
   ],
   controllers: [AppController],
   providers: [AppService],
