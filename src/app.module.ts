@@ -9,7 +9,23 @@ import { envValidationSchema } from './config/env.validation';
  // the {} brackets.
 import jwtConfig from './auth/config/jwt.config';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 
+/*
+NestJS operates using a module tree:
+
+AppModule is the root module that bootstraps the application in main.ts.
+
+Any module created (AuthModule, UsersModule, etc.) must be connected—directly or indirectly—to the root module for its components to become active.
+
+When adding AuthModule to AppModule's imports:
+
+- NestJS will read the routes declared in AuthController and create the corresponding endpoints.
+
+- It will instantiate AuthService and the JwtStrategy.
+
+- It will make the entire authentication flow available to the application.
+*/
 @Module({
   imports: [
     ConfigModule.forRoot({ // Initializes the configuration system and loads variables from .env into the application
@@ -23,6 +39,7 @@ import { DatabaseModule } from './database/database.module';
       load: [jwtConfig], // Load the JWT configuration from jwt.config.ts
     }),
     DatabaseModule, // @Global() in the database.module.ts makes DatabaseService injectable anywhere
+    AuthModule, // Import the AuthModule to make its services available in AppModule
   ],
   controllers: [AppController],
   providers: [AppService],
