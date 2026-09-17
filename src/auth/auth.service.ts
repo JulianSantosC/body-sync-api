@@ -321,25 +321,25 @@ export class AuthService {
   async refresh(refreshToken: string) {
     let payload: { sub: string };
     try {
-    // Unlike the access token (which Passport automatically verifies
-    // via JwtStrategy), the refresh token is verified here, manually,
-    // because it never passes through an endpoint protected by JwtAuthGuard—the
-    // client sends it directly in the body of the POST /auth/refresh request.
-    // The .verify method takes the JWT header and payload, re-signs them
-    // using the same secret key used in issueTokens(), checks if the
-    // signature matches, and verifies that the token has not yet expired.
-    // If it doesn't match, it throws an exception (caught in the catch block).
-    // If it does match, it returns the decoded payload (the { sub: string }
-    // object that was signed in issueTokens()).
-    payload = this.jwtService.verify(refreshToken, {
-      secret: this.jwtConfiguration.refreshSecret,
-    });
-  } catch {
-    // jwtService.verify() throws an exception if the signature is invalid OR
-    // if the token has already expired—in both cases, the attempt is treated the same way:
-    // invalid credential.
-    throw new UnauthorizedException('Invalid refresh token');
-  }
+      // Unlike the access token (which Passport automatically verifies
+      // via JwtStrategy), the refresh token is verified here, manually,
+      // because it never passes through an endpoint protected by JwtAuthGuard—the
+      // client sends it directly in the body of the POST /auth/refresh request.
+      // The .verify method takes the JWT header and payload, re-signs them
+      // using the same secret key used in issueTokens(), checks if the
+      // signature matches, and verifies that the token has not yet expired.
+      // If it doesn't match, it throws an exception (caught in the catch block).
+      // If it does match, it returns the decoded payload (the { sub: string }
+      // object that was signed in issueTokens()).
+      payload = this.jwtService.verify(refreshToken, {
+        secret: this.jwtConfiguration.refreshSecret,
+      });
+    } catch {
+      // jwtService.verify() throws an exception if the signature is invalid OR
+      // if the token has already expired—in both cases, the attempt is treated the same way:
+      // invalid credential.
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
     // Hash the provided refresh token to compare it with the stored hash in the database.
     const tokenHash = createHash('sha256').update(refreshToken).digest('hex');

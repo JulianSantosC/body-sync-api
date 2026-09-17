@@ -55,6 +55,10 @@ export class DatabaseService implements OnModuleDestroy {
   //
   // `Promise<QueryResult<T>>` is the return type: a Promise that,
   // when resolved, yields a `QueryResult` containing rows of type `T`.
+  //
+  // This is a public entry point for the rest of the app. Repositories call this
+  // instead of touching `pool` directly — keeps the Pool instance fully
+  // encapsulated here
   async query<T extends QueryResultRow = any>(
     text: string,
     params?: any[],
