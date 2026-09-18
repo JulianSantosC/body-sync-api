@@ -61,7 +61,7 @@ export class WeightEntriesService {
     const row = await this.repository.findOneByPublicIdAndUser(publicId, userId);
 
     if (!row) {
-      // We deliberately throw NotFound rather than Forbidden here, even
+      // Throw NotFound rather than Forbidden here, even
       // though ownership is technically what failed. Returning 403 would
       // confirm to an attacker that the public_id exists but belongs to
       // someone else — 404 leaks no information either way.
