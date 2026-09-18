@@ -10,6 +10,7 @@ import { envValidationSchema } from './config/env.validation';
 import jwtConfig from './auth/config/jwt.config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
+import { WeightEntriesModule } from './weight-entries/weight-entries.module';
 
 /*
 NestJS operates using a module tree:
@@ -40,6 +41,7 @@ When adding AuthModule to AppModule's imports:
     }),
     DatabaseModule, // @Global() in the database.module.ts makes DatabaseService injectable anywhere
     AuthModule, // Import the AuthModule to make its services available in AppModule
+    WeightEntriesModule, // Import the WeightEntriesModule to make its services available in AppModule
   ],
   controllers: [AppController],
   providers: [AppService],
